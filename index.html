@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flashcards: 35 English Idioms and Phrases</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 450px; /* Increased size for better text visibility */
+            height: 300px;
+            margin: auto;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 1rem;
+            border: 3px solid;
+            cursor: pointer;
+        }
+        .card-front {
+            background-color: #ffffff;
+            border-color: #3b82f6; /* Blue 500 */
+        }
+        .card-back {
+            background-color: #3b82f6; /* Blue 500 */
+            color: white;
+            transform: rotateY(180deg);
+            border-color: #ef4444; /* Red 500 */
+        }
+        .card-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+        }
+        .explanation {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        .portuguese-equivalent {
+            margin-top: 0.25rem;
+            font-style: italic;
+            font-weight: 600;
+        }
+        .navigation button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-800">
+                Idioms Master: 35 Flashcards
+            </h1>
+            <p class="text-gray-600 mt-2">
+                Test your knowledge of common English idioms and phrases.
+            </p>
+            <p id="card-counter" class="text-lg font-semibold text-red-600 mt-4">
+                Card 1 of 35
+            </p>
+        </header>
+
+        <!-- FLASHCARD COMPONENT -->
+        <div class="flashcard-container">
+            <div id="flashcard" class="flashcard">
+                <div id="card-front" class="card-face card-front shadow-lg">
+                    <p class="card-text text-gray-800 font-semibold"></p>
+                </div>
+                <div id="card-back" class="card-face card-back shadow-lg">
+                    <p class="card-text font-bold"></p>
+                    <p class="explanation"></p>
+                    <p class="portuguese-equivalent"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION CONTROLS -->
+        <div class="navigation flex justify-center items-center gap-6 mt-12">
+            <button id="prev-btn" class="px-5 py-3 bg-gray-300 text-gray-800 font-bold rounded-full shadow-md hover:bg-gray-400 transition disabled:opacity-50">
+                &larr; Previous
+            </button>
+            <button id="flip-btn" class="px-8 py-4 bg-red-600 text-white font-extrabold rounded-full shadow-xl hover:bg-red-700 transition transform hover:scale-105">
+                Flip Card
+            </button>
+            <button id="next-btn" class="px-5 py-3 bg-blue-600 text-white font-bold rounded-full shadow-md hover:bg-blue-700 transition disabled:opacity-50">
+                Next &rarr;
+            </button>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+        Created by Daby @2025
+    </footer>
+    <!-- END FOOTER -->
+
+    <script>
+        // Array of flashcards (20 Definitions + 15 Exercises = 35 total)
+        const flashcards = [
+            // ----------------------------------------------------
+            // 1. IDIOM DEFINITIONS (20 CARDS)
+            // ----------------------------------------------------
+            {
+                "front": "What does 'Cut me some slack' mean?",
+                "back": "Don't be too strict or critical.",
+                "explanation": "Example: Please cut me some slack if I don't finish everything today.",
+                "br_equivalent": "Equivalente BR: Dá um desconto / Seja menos exigente."
+            },
+            {
+                "front": "What does 'They go hand in hand' mean?",
+                "back": "They naturally happen together or are closely associated.",
+                "explanation": "Example: Success and hard work go hand in hand.",
+                "br_equivalent": "Equivalente BR: Andam de mãos dadas / Estão intimamente ligados."
+            },
+            {
+                "front": "What does 'She's my partner in crime' mean?",
+                "back": "We have a close relationship (a close friend, spouse, or family member).",
+                "explanation": "Example: We've known each other since childhood, she's my partner in crime.",
+                "br_equivalent": "Equivalente BR: Minha parceira(o) de crime (no sentido carinhoso de cúmplice/melhor amigo)."
+            },
+            {
+                "front": "What does 'He has a soft spot for snakes' mean?",
+                "back": "He loves them deeply; he has a special affection for them.",
+                "explanation": "Example: I love all animals, but I have a soft spot for cats.",
+                "br_equivalent": "Equivalente BR: Tem um fraco por / Gosta muito de."
+            },
+            {
+                "front": "What does 'My new boss is quite blunt' mean?",
+                "back": "He is direct, frank, or straightforward (often used to introduce criticism).",
+                "explanation": "Example: To be blunt, I wasn't impressed with your presentation.",
+                "br_equivalent": "Equivalente BR: É direto/franco/sem rodeios."
+            },
+            {
+                "front": "What does 'There's a fine line between X and Y' mean?",
+                "back": "The distinction between X and Y is very subtle; they are often confused.",
+                "explanation": "Example: There's a fine line between love and hate.",
+                "br_equivalent": "Equivalente BR: É uma linha tênue entre X e Y."
+            },
+            {
+                "front": "What does 'Misery loves company' mean?",
+                "back": "Unhappy people often want others to feel unhappy too (or want others to share their sadness).",
+                "explanation": "Example: Don't let his negativity bring you down. Remember, misery loves company.",
+                "br_equivalent": "Equivalente BR: A desgraça/tristeza alheia consola (ou a 'desgraça chama desgraça')."
+            },
+            {
+                "front": "What are 'Jammies'?",
+                "back": "Casual, comfortable clothing worn for sleeping or relaxing (an informal term for pajamas).",
+                "explanation": "Example: Before the movie, let's get into our jammies.",
+                "br_equivalent": "Equivalente BR: Pijama(s)."
+            },
+            {
+                "front": "What does 'Don't jump to conclusions' mean?",
+                "back": "Don't form an opinion or belief before having all the facts.",
+                "explanation": "Example: Before jumping to conclusions, just ask him why he is late.",
+                "br_equivalent": "Equivalente BR: Não tire conclusões precipitadas."
+            },
+            {
+                "front": "What is a 'cheapskate'?",
+                "back": "Someone who hates spending money and tries to avoid paying for things whenever possible.",
+                "explanation": "Example: She brings her own popcorn to the movies. She's a cheapskate.",
+                "br_equivalent": "Equivalente BR: Um pão-duro / Mão de vaca / Avarento."
+            },
+            {
+                "front": "What does 'I have to walk on eggshells' mean?",
+                "back": "To be extremely careful not to offend or upset someone.",
+                "explanation": "Example: I have to walk on eggshells whenever my angry cousin is around.",
+                "br_equivalent": "Equivalente BR: Andar pisando em ovos."
+            },
+            {
+                "front": "What does 'That always pushes his buttons' mean?",
+                "back": "To deliberately say or do something to annoy or provoke someone.",
+                "explanation": "Example: Asking him about his renovation always pushes his buttons.",
+                "br_equivalent": "Equivalente BR: Apertar os botões de alguém / Mexer com o que incomoda."
+            },
+            {
+                "front": "What does 'I don't mean to be a wet blanket' mean?",
+                "back": "A person who discourages fun or enjoyment; a killjoy.",
+                "explanation": "Example: I don't mean to be a wet blanket, but I have an early meeting.",
+                "br_equivalent": "Equivalente BR: Ser um balde de água fria / Estraga-prazeres."
+            },
+            {
+                "front": "What does 'He hasn't an ax to grind' mean?",
+                "back": "To have a personal reason or a hidden motive for something (usually negative).",
+                "explanation": "Example: He's complaining about the policy because he has an ax to grind, not because it affects his work.",
+                "br_equivalent": "Equivalente BR: Ter segundas intenções / Ter um motivo pessoal (negativo)."
+            },
+            {
+                "front": "What does 'No harm, no foul' mean?",
+                "back": "Nothing bad has happened, so there's no reason to be upset or take action.",
+                "explanation": "Example: The new intern forgot to mail the samples, but no harm, no foul. We can overnight them.",
+                "br_equivalent": "Equivalente BR: Sem ofensa / Sem problema (se o erro não causou dano)."
+            },
+            {
+                "front": "What does 'When are you tying the knot?' mean?",
+                "back": "A casual way of saying 'to get married'.",
+                "explanation": "Example: They're tying the knot next May.",
+                "br_equivalent": "Equivalente BR: Quando vocês vão se casar / Amarrar o nó?"
+            },
+            {
+                "front": "What does 'Why are you dressed to the nines?' mean?",
+                "back": "To wear very formal, very fashionable, or impeccably elegant clothes.",
+                "explanation": "Example: He dresses to the nines for every occasion.",
+                "br_equivalent": "Equivalente BR: Estar 'nas estribeiras' / Vestido de gala."
+            },
+            {
+                "front": "What does 'I called shotgun' mean?",
+                "back": "To claim the right to sit in the front passenger seat of a vehicle.",
+                "explanation": "Example: We're going on a road trip, and I called shotgun!",
+                "br_equivalent": "Equivalente BR: Chamei a carona (no sentido de 'chamei o banco da frente')."
+            },
+            {
+                "front": "What does 'Beat around the bush' mean?",
+                "back": "To avoid talking about what is important; to talk evasively.",
+                "explanation": "Example: Stop beating around the bush and just say what's on your mind.",
+                "br_equivalent": "Equivalente BR: Ficar de rodeios / Enrolar."
+            },
+            {
+                "front": "What does 'You need to read between the lines' mean?",
+                "back": "To understand someone's real feelings or intentions from what they imply, not what they explicitly say.",
+                "explanation": "Example: He said he wants to travel for 10 years, you need to read between the lines.",
+                "br_equivalent": "Equivalente BR: Ler nas entrelinhas."
+            },
+            // ----------------------------------------------------
+            // 2. EXERCISES (15 CARDS)
+            // ----------------------------------------------------
+            {
+                "front": "EXERCISE 1 (MC): 'Cut me some slack' means: A) Don't be too critical. B) Give me a discount. C) Help me finish my work.",
+                "back": "A) Don't be too critical.",
+                "explanation": "This idiom asks for tolerance or leniency.",
+                "br_equivalent": "Equivalente BR: A - Não seja muito crítico."
+            },
+            {
+                "front": "EXERCISE 2 (MC): Success and hard work often **go hand in hand**. The idiom means they are: A) closely related. B) confusing. C) opposites.",
+                "back": "A) closely related.",
+                "explanation": "Things that go hand in hand occur together naturally.",
+                "br_equivalent": "Equivalente BR: A - Intimamente relacionados."
+            },
+            {
+                "front": "EXERCISE 3 (Translation): Ela é minha melhor amiga e **parceira de crime**.",
+                "back": "She is my best friend and **partner in crime**.",
+                "explanation": "Partner in crime is an affectionate term for a close friend.",
+                "br_equivalent": "Equivalente BR: Partner in crime."
+            },
+            {
+                "front": "EXERCISE 4 (Translation): Meu pai **tem um fraco** por cachorros de rua.",
+                "back": "My father **has a soft spot** for street dogs.",
+                "explanation": "A soft spot means deep affection or sentimentality for something.",
+                "br_equivalent": "Equivalente BR: Has a soft spot."
+            },
+            {
+                "front": "EXERCISE 5 (Fill-in-the-Blank): To be ______, I think your proposal needs more work.",
+                "back": "To be **blunt**.",
+                "explanation": "To be blunt means to speak directly, often about something critical.",
+                "br_equivalent": "Equivalente BR: Para ser franco."
+            },
+            {
+                "front": "EXERCISE 6 (Fill-in-the-Blank): There's a fine ______ between genius and madness.",
+                "back": "There's a fine **line**.",
+                "explanation": "A fine line refers to a very subtle difference or distinction.",
+                "br_equivalent": "Equivalente BR: Linha tênue."
+            },
+            {
+                "front": "EXERCISE 7 (Translation): **Não tire conclusões precipitadas** sobre o porquê ele está atrasado.",
+                "back": "**Don't jump to conclusions** about why he is late.",
+                "explanation": "To jump to conclusions is to judge without all the facts.",
+                "br_equivalent": "Equivalente BR: Don't jump to conclusions."
+            },
+            {
+                "front": "EXERCISE 8 (MC): If you are a ______, you probably hate buying drinks for friends. A) wet blanket. B) cheapskate. C) partner in crime.",
+                "back": "B) cheapskate.",
+                "explanation": "A cheapskate dislikes spending money.",
+                "br_equivalent": "Equivalente BR: B - Pão-duro/mão de vaca."
+            },
+            {
+                "front": "EXERCISE 9 (Translation): Sinto que preciso **pisar em ovos** perto do novo gerente.",
+                "back": "I feel like I need to **walk on eggshells** near the new manager.",
+                "explanation": "To walk on eggshells means to be very cautious not to cause offense.",
+                "br_equivalent": "Equivalente BR: Walk on eggshells."
+            },
+            {
+                "front": "EXERCISE 10 (Fill-in-the-Blank): Don't try to ______ his buttons, he's already stressed out.",
+                "back": "Don't try to **push** his buttons.",
+                "explanation": "To push someone's buttons is to provoke or annoy them.",
+                "br_equivalent": "Equivalente BR: Apertar os botões."
+            },
+            {
+                "front": "EXERCISE 11 (Translation): Não seja um **estraga-prazeres** e venha para a festa.",
+                "back": "Don't be a **wet blanket** and come to the party.",
+                "explanation": "A wet blanket is someone who ruins the fun for others.",
+                "br_equivalent": "Equivalente BR: Wet blanket."
+            },
+            {
+                "front": "EXERCISE 12 (Fill-in-the-Blank): He claims he's helping, but I think he just has an **ax to** ______.",
+                "back": "He just has an **ax to grind**.",
+                "explanation": "To have an ax to grind means to have a hidden, selfish motive.",
+                "br_equivalent": "Equivalente BR: Ter segundas intenções."
+            },
+            {
+                "front": "EXERCISE 13 (MC): 'No harm, no foul' implies: A) A serious mistake was made. B) The mistake was minor and forgivable. C) Punishment is necessary.",
+                "back": "B) The mistake was minor and forgivable.",
+                "explanation": "The phrase means that since no damage was done, there's no reason to be upset.",
+                "br_equivalent": "Equivalente BR: B - O erro foi menor e perdoável (sem problemas)."
+            },
+            {
+                "front": "EXERCISE 14 (Translation): Eles **vão se casar** no próximo mês.",
+                "back": "They are **tying the knot** next month.",
+                "explanation": "To tie the knot is an informal way to say to get married.",
+                "br_equivalent": "Equivalente BR: Tying the knot."
+            },
+            {
+                "front": "EXERCISE 15 (Fill-in-the-Blank): If you can't understand his intentions, you need to **read between the** ______.",
+                "back": "You need to **read between the lines**.",
+                "explanation": "To read between the lines is to infer the true meaning from what is said or implied.",
+                "br_equivalent": "Equivalente BR: Ler nas entrelinhas."
+            }
+        ];
+
+        let currentCardIndex = 0;
+        const totalCards = flashcards.length;
+
+        // DOM elements
+        const flashcardElement = document.getElementById('flashcard');
+        const frontTextElement = document.querySelector('#card-front .card-text');
+        const backTextElement = document.querySelector('#card-back .card-text');
+        const explanationElement = document.querySelector('#card-back .explanation');
+        const brEquivalentElement = document.querySelector('#card-back .portuguese-equivalent');
+        const cardCounterElement = document.getElementById('card-counter');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const flipBtn = document.getElementById('flip-btn');
+
+        // --- Functions ---
+
+        function updateCardDisplay() {
+            const card = flashcards[currentCardIndex];
+            
+            // Set texts
+            frontTextElement.textContent = card.front;
+            backTextElement.textContent = card.back;
+            explanationElement.textContent = card.explanation;
+            brEquivalentElement.textContent = card.br_equivalent;
+            
+            // Update counter
+            cardCounterElement.textContent = `Card ${currentCardIndex + 1} of ${totalCards}`;
+            
+            // Update navigation button states
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex === totalCards - 1;
+
+            // Ensure card is unflipped when loading new content
+            flashcardElement.classList.remove('flipped');
+        }
+
+        function flipCard() {
+            flashcardElement.classList.toggle('flipped');
+        }
+
+        function goToNextCard() {
+            if (currentCardIndex < totalCards - 1) {
+                currentCardIndex++;
+                updateCardDisplay();
+            }
+        }
+
+        function goToPrevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCardDisplay();
+            }
+        }
+
+        // --- Event Listeners ---
+
+        window.onload = function() {
+            updateCardDisplay();
+            
+            // Click card to flip
+            flashcardElement.addEventListener('click', flipCard);
+            
+            // Button controls
+            flipBtn.addEventListener('click', flipCard);
+            nextBtn.addEventListener('click', goToNextCard);
+            prevBtn.addEventListener('click', goToPrevCard);
+        };
+    </script>
+</body>
+</html>
